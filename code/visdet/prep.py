@@ -13,14 +13,14 @@ GRAY = (114, 114, 114)
 
 
 def read_yolo(path) -> np.ndarray:
-    if not os.path.exists(path):
+    if not os.path.exists(path) or os.path.getsize(path) == 0:
         return np.zeros((0, 5), np.float32)
     a = np.loadtxt(path, ndmin=2, dtype=np.float32)
     return a.reshape(-1, 5) if a.size else np.zeros((0, 5), np.float32)
 
 
 def read_ignore(path) -> np.ndarray:
-    if not os.path.exists(path):
+    if not os.path.exists(path) or os.path.getsize(path) == 0:
         return np.zeros((0, 4), np.float32)
     a = np.loadtxt(path, ndmin=2, dtype=np.float32)
     return a.reshape(-1, 4) if a.size else np.zeros((0, 4), np.float32)
