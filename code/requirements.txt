@@ -1,0 +1,5 @@
+ultralytics==8.4.198
+pycocotools>=2.0.7
+ensemble-boxes==1.0.9
+umap-learn>=0.5.5
+wandb>=0.17
