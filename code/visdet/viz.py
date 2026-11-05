@@ -78,11 +78,15 @@ class FRCNNGradCAM:
     def _fpn_hook(self, m, inp, out):
         for k, v in out.items():
             if k in ("0", "1", "2", "3"):
-                v.retain_grad(); self.acts[f"P{int(k) + 2}"] = v
+                if v.requires_grad:
+                    v.retain_grad()
+                self.acts[f"P{int(k) + 2}"] = v
 
     def _mk(self, name):
         def h(m, inp, out):
-            out.retain_grad(); self.acts[name] = out
+            if out.requires_grad:
+                out.retain_grad()
+            self.acts[name] = out
         return h
 
     def remove(self):
@@ -92,6 +96,7 @@ class FRCNNGradCAM:
     def __call__(self, img_tensor, det_index=None, box=None):
         self.acts = {}
         self.model.zero_grad(set_to_none=True)
+        img_tensor = img_tensor.detach().clone().requires_grad_(True)
         with torch.enable_grad():
             out = self.model([img_tensor])[0]
             if det_index is None:

@@ -34,10 +34,32 @@ def last_progress(path):
     return lines[-1].strip()[:160] if lines else ""
 
 
+def reuse_finished(name, args, roots=("/kaggle/input",)):
+    import glob
+    import shutil
+    out_root = Path(args[args.index("--out") + 1])
+    for r in roots:
+        for m in sorted(glob.glob(os.path.join(r, "**", name, "metrics.json"), recursive=True)):
+            d = Path(m).parent
+            if (d / "best.pt").exists() or (d / "model_final.pth").exists():
+                shutil.copytree(d, out_root / name, dirs_exist_ok=True)
+                return d
+    return None
+
+
 def run_jobs(jobs, log_dir, stagger_s=60, report_every_s=600):
     log_dir = Path(log_dir); log_dir.mkdir(parents=True, exist_ok=True)
     gpus = list(range(n_gpus())) or [None]
-    queue, running, codes = list(jobs), {}, {}
+    codes = {}
+    todo = []
+    for name, args in jobs:
+        src = reuse_finished(name, args)
+        if src is not None:
+            print(f"{name}: reused finished run from {src}", flush=True)
+            codes[name] = 0
+        else:
+            todo.append((name, args))
+    queue, running = todo, {}
     last_report, last_start = time.time(), 0.0
     env0 = {**os.environ, "PYTHONPATH": str(CODE_DIR) + os.pathsep + os.environ.get("PYTHONPATH", ""),
             "PYTHONUNBUFFERED": "1"}
