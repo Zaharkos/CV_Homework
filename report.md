@@ -161,3 +161,8 @@ All logs and plots are in W&B (`ucu-visdrone-hw2`).
 **Steps:**
 1. Open `code/notebooks/1_data_and_detectors.ipynb`, set `REPO_URL` and `DEBUG = False`, attach VisDrone and run all (~7.5 h). It does EDA and trains all 16 test runs.
 2. Open `code/notebooks/2_final_viz_summary.ipynb` (`DEBUG = False`), attach the dataset and notebook 1 outputs, run all (~5 h). It trains the final models and saves `submissions/submission_final.csv`.
+**Dependencies:** code/requirements.txt Seed 0 everywhere.
+
+## References
+ 
+**Code and libraries:** torchvision detection models; Ultralytics YOLO11 and RT-DETR (AGPL-3.0); pycocotools; ensemble-boxes (WBF); umap-learn; Weights & Biases.
